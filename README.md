@@ -4,8 +4,8 @@
 pypbs is a python module wrapping interaction with the Portable Batch
 System (PBS) for submitting jobs on computer clusters, and a number of
 useful utilities utilizing this interface.  This is not a C API
-wrapper, but a wrapper around the PBS shell commands `qsub', `qdel'
-and `qstat'.  Its primary purpose is to make available several command
+wrapper, but a wrapper around the PBS shell commands `qsub`, `qdel`
+and `qstat`.  Its primary purpose is to make available several command
 line utilities and a job mapping function in python.
 
 I developed this module during my PhD in applied physics at Rice
@@ -31,11 +31,11 @@ number of simultaneous jobs to submit.
 
 Here is an example pypbs.ini I use:
 
-   [PBSMAP]
-   numnodes=1
-   numprocs=1
-   queue=serial
-   max_submissions=624
+     [PBSMAP]
+     numnodes=1
+     numprocs=1
+     queue=serial
+     max_submissions=624
 
 
 
@@ -43,35 +43,36 @@ Here is an example pypbs.ini I use:
 
 ### qdel_all
 
-qdel_all kills all jobs submitted by the user.
+`qdel_all` kills all jobs submitted by the user.
 
 ### qdel_name
 
-qdel_name kills all jobs with names matching the command line argument. 
+`qdel_name` kills all jobs with names matching the command line argument. 
 
 For example, suppose jobs with names hello1, hello2 and world5 are
-running or submitted to the queue.  Running "qdel_name hello" will
+running or submitted to the queue.  Running `qdel_name hello` will
 kill both hello1 and hello2, leaving world5 running.
 
 
 ### qdel_range
 
-qdel_range kills all jobs with job id in the contiguous range specified by its arguments.  
+`qdel_range` kills all jobs with job id in the contiguous range specified by its arguments.  
 
-For example, qdel_range 433700 433705 will kill all jobs 433700..433705 inclusive.
+For example, `qdel_range 433700 433705` will kill all jobs 433700..433705 inclusive.
 
 ### nice_submit
 
-nice_submit takes a list of scripts to submit, and, running as a
+`nice_submit` takes a list of scripts to submit, and, running as a
 daemon, submits the jobs consecutively until they are finished.  This
 utility is useful when the number of jobs to submit is significantly
 greater than the maximum number of simultaneous jobs allowed by the
 cluster.  nice_submit will submit as many jobs as allowed and then
-wait until the submitted jobs have completed before submitted more.
+wait until the submitted jobs have completed before submitted more.  A
+typical invocation is `nice_submit script_list`.
 
 ### pbs_chain
 
-pbs_chain reads qsub job submission statements from stdin, and waits
+`pbs_chain` reads qsub job submission statements from stdin, and waits
 for those jobs to complete before terminating; thus allowing chaining
 dependent jobs together at the command line. 
 
