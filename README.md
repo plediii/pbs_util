@@ -39,7 +39,7 @@ Here is an example pypbs.ini I use:
 
 
 
-## Utilities
+## Shell Utilities
 
 ### qdel_all
 
@@ -122,7 +122,7 @@ stdout.
     submit_command -W ls
 
 
-## Library Functions
+## Module Functions
 
 ### pbs_map
 
@@ -130,7 +130,7 @@ The collection of command line utilities in pypbs are useful for
 gluing together non-trivial PBS jobs at the command line; however they
 can not address how to divide a large set of small jobs in an optimal
 way to the compute nodes.  There is often a non-neglible delay between
-requesting a script to be submitted, and the actual invocation of the
+requesting a script to be submitted and the actual invocation of the
 script on a remote node.  The usual solution to this problem is to
 merge several smaller jobs into a smaller set of macro jobs.  The
 finite wall time on the cluster tends to mar the simplicity of this
@@ -139,36 +139,36 @@ approach.
 The purpose of pbs_map is to simplify both the way that jobs are to be
 divided between nodes, and eliminate the tedium in manual submission
 of multiple interdependent jobs.  pbs_map takes Worker class which
-acts as a function, and an iterator of tuples of arguments to the
-Worker function.  The workers are instantiated on the nodes and called
-on the work arguments transmitted from the master node.  pbs_map
-guarantees that a result from each work unit is collected (in no
-particular order).
+acts as a function, and an iterator of arguments to the Worker
+function.  The workers are instantiated on the nodes and called on the
+work arguments transmitted from the master node.  pbs_map guarantees
+that a result from each work unit is collected (in no particular
+order).
 
 To demonstrate how pbs_map works, the following program will compute
 the primality of integers in parallel on the compute nodes.
 
-import pbs_map as ppm
+    import pbs_map as ppm
 
-class PrimeWorker(ppm.Worker):
-    
-    def __call__(self, n):
-        is_prime = True
-        for m in xrange(2,n):
-            if n % m == 0:
-                is_prime = False
-                break
+    class PrimeWorker(ppm.Worker):
 
-        return (n, is_prime)
-        
+        def __call__(self, n):
+            is_prime = True
+            for m in xrange(2,n):
+                if n % m == 0:
+                    is_prime = False
+                    break
 
-if __name__ == "__main__":
-    for (n, is_prime) in sorted(ppm.pbs_map(PrimeWorker, range(1000, 10100), 
-                                            num_clients=100)):
-        if is_prime:
-            print '%d is prime' % (n)
-        else:
-            print '%d is composite' % (n)
+            return (n, is_prime)
+
+
+    if __name__ == "__main__":
+        for (n, is_prime) in sorted(ppm.pbs_map(PrimeWorker, range(1000, 10100), 
+                                                num_clients=100)):
+            if is_prime:
+                print '%d is prime' % (n)
+            else:
+                print '%d is composite' % (n)
 
 
 It is also possible to provide initialization arguments to the worker
@@ -179,7 +179,7 @@ programs are running.
 
     from socket import gethostname
 
-    class PrimeWorker(ppm.Worker):
+    class HostNameWorker(ppm.Worker):
 
         def __init__(self, master_name):
             self.master_name = master_name
@@ -190,7 +190,7 @@ programs are running.
 
 
     if __name__ == "__main__":
-        for (master, node) in ppm.pbs_map(PrimeWorker, range(1, 100), 
+        for (master, node) in ppm.pbs_map(HostNameWorker, range(1, 100), 
                                           startup_args=(gethostname(),), # send the master node login to the worker
                                           num_clients=100):
             print 'Received result from %s who received work from %s' % (node, master)
