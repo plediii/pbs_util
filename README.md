@@ -8,15 +8,6 @@ wrapper, but a wrapper around the PBS shell commands `qsub`, `qdel`
 and `qstat`.  Its primary purpose is to make available several command
 line utilities and a job mapping function in python.
 
-I developed this module during my PhD in applied physics at Rice
-University, where I used pypbs to manage job submission on the
-clusters there.  Work on the pypbs system occurred in several stages.
-First there was the initial development of the wrapper around the PBS
-utilities.  This allowed rapid development of several additional
-utilities for manipulating submitted, creating, and sequencing jobs.
-The predominant way that I use pypbs now is through the pbs_map
-function, which hides job management behind a simple map interface.
-
 ## Dependencies
 
 pypbs depends on my tempfile_util module. 
@@ -38,6 +29,11 @@ Here is an example pypbs.ini I use:
      max_submissions=624
 
 
+## Testing
+
+`pypbs`'s ability to submit and query that status of submitted jobs can be tested by:
+
+   python test_pypbs.py
 
 ## Shell Utilities
 
