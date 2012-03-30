@@ -52,7 +52,7 @@ class Check_qstat(HelloWorldCase):
 
     def test_qstat_not_present(self):
         """pbs.qstat should return None when given a pbs id that doesn't actuallye exist."""
-        self.assertRaises(pbs.PyPBSError, pbs.qstat, '12345.notreal')
+        self.assertRaises(pbs.PBSUtilError, pbs.qstat, '12345.notreal')
 
 class Check_qsub(HelloWorldCase):
     """Check that pbs.qsub works."""
