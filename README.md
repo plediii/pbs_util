@@ -41,6 +41,17 @@ parallel on 100 nodes of a compute cluster:
 
 `pbs_util` depends on my `tempfile_util` module. 
 
+## Installation
+
+Clone `pbs_util` into your python `site-packages` directory.
+
+      cd your_python_site-packages
+      git clone git@github.com:plediii/pbs_util
+
+Optionally, install symbolic links to the shell utilities to a directory in your `PATH`.  
+
+	    ./link_local_bin.sh ${HOME}/local/bin
+
 ## Configuration
 
 Default options for qsub submission are set in either ~/.pbs_util.ini, or
@@ -63,6 +74,13 @@ Here is an example pbs_util.ini I use:
 `pbs_util` includes a test suite to check its ability to submit jobs:
 
    python test_pbs_util.py
+
+There are also tests for the pbs_map module:
+
+      python test_pbs_map.py
+
+And a couple scripts demonstrating the use of `pbs_map`:
+`prime_example.py` and `host_example.py`.
 
 ## Shell Utilities
 

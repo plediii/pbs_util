@@ -1,8 +1,20 @@
 #!/bin/bash
 # Install utilities by making a link to them in ~/local/bin
 
-TARGET=${HOME}/local/bin
-mkdir -p ${TARGET}
+if [ $# -lt 1 ]; then 
+    TARGET=${HOME}/local/bin
+else
+    TARGET=$1
+fi
+
+if [ ! -d ${TARGET} ]; then
+    echo
+    echo "  Usage: $0 [A DIRECTORY IN YOUR PATH]"
+    echo
+    echo " Directory ${TARGET} does not exist. "
+    echo
+    exit 1
+fi
 
 HERE=`pwd`
 exes="nice_submit pbs_chain submit_command qdel_range qdel_all qdel_name kill_submitted_jobs pbs_alert"
