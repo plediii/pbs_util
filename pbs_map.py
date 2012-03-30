@@ -370,13 +370,12 @@ class PBSClientManager(object):
         got_clients = False
         while not got_clients:
             try:
-                for job in pbs.qstat():
+                for job in pbs.qstat(user=os.environ['USER']):
                     if job.name == map_name:
                         client_jobs.append(job)
                 got_clients=True
-            except pbs.PyPBSQStatError, e:
+            except pbs.PBSUtilQStatError, e:
                 logging.warning('ERROR: Bad qstat output. %s' % e)
-                print 'ERROR: Bad qstat output.', str(e)
                 time.sleep(5)
                 got_clients=False
             
@@ -456,7 +455,7 @@ class PBSClientManager(object):
             logging.info('num living = %s' % num_living)
             if num_living == 0:
                 logging.warning('Number of living clients is zero.  Nothing to do.')
-                time.sleep(5 * 60)
+                time.sleep(10)
 
 
 class PBSMap(object):

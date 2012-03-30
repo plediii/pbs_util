@@ -7,6 +7,13 @@ import sys
 
 import pbs_map as ppm
 
+print """
+
+Note: If jobs are accepted to by the batch system but not executed, this test suite will hang. 
+
+"""
+# TODO: Use showstart to identify hanging submissions
+
 class IdentityWorker(ppm.Worker):
 
     def do_work(self, x):

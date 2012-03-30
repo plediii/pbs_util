@@ -31,7 +31,7 @@ class ReachedMax(NiceSubmitError):
 class QSubFailure(NiceSubmitError):
     pass
 
-def submit_files_until_done(filenames, wait_for_all=False, delay_check=0, sleep_seconds=60 * 5, 
+def submit_files_until_done(filenames, wait_for_all=False, delay_check=0.5, sleep_seconds=60 * 5, 
                             quiet=False, 
                             fail_when_max=False, 
                             retry_on_failure=True):
@@ -56,7 +56,7 @@ def submit_files_until_done(filenames, wait_for_all=False, delay_check=0, sleep_
                         print 'I think submitted %d/%d' % (num_submitted,max_submissions)
                     sys.stderr.flush()
                     sys.stdout.flush()
-                except pbs.PyPBSError:
+                except pbs.PBSUtilError:
                     traceback.print_exc()
                     if not quiet:
                         print 'Failed to submit %s at %s  (%s left to submit)' % (filenames[0], time.asctime(), len(filenames[1:]))

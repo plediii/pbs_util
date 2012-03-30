@@ -1,6 +1,6 @@
 """Identify primes using pbs_map."""
 
-import pbs_map as ppm
+import pbs_util.pbs_map as ppm
 
 from socket import gethostname
 

@@ -1,4 +1,4 @@
-import pbs_map as ppm
+import pbs_util.pbs_map as ppm
 
 class PrimeWorker(ppm.Worker):
     
