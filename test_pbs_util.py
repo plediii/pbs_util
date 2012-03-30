@@ -6,6 +6,8 @@ import os.path
 import os
 import subprocess
 
+from submit_command import run_command_here
+
 
 def file_contents(filename):
     file = open(filename)
@@ -22,18 +24,14 @@ class HelloWorldCase(unittest.TestCase):
     """Set up a hello world script for testing with."""
 
     def setUp(self):
-        self.temp_output_filename = os.path.realpath('.') + '/temp.out'
+        temp_output_filename = self.temp_output_filename = os.path.realpath('.') + '/temp.out'
         self.pbs_script_filename = os.path.realpath('.') + '/test.pbs'
-        
-        dump_to_file(self.pbs_script_filename, 
-                     """#!/bin/tcsh -f
-#PBS -N test_helloworld
-#PBS -e /dev/null
-#PBS -o /dev/null
-##PBS -o %(temp_output_filename)s
+
+        dump_to_file(self.pbs_script_filename,
+                     pbs.generic_script("""
 echo "Hello, World!" > %(temp_output_filename)s
 sleep 1
-""" % self.__dict__)
+""" % locals()))
 
     def tearDown(self):  
         if os.path.exists(self.temp_output_filename):

@@ -5,6 +5,8 @@ import os
 import time
 import uuid
 
+import configuration
+
 class PBSUtilError(Exception): pass
 class PBSUtilQStatError(PBSUtilError): pass
 class PBSUtilQSubError(PBSUtilError): pass
@@ -202,19 +204,64 @@ def get_signature():
     return signature
 
 
-def generic_script(contents, job_name='anonymous', stdout='/dev/null', stderr='/dev/null', shebang='#!/bin/bash'):
-    """Create a generic bash script executing contents."""
+def generic_script(contents, 
+                   job_name=None, 
+                   stdout='/dev/null', 
+                   stderr='/dev/null', 
+                   shebang='#!/bin/bash',
+                   numnodes=None,
+                   numcpu=None,
+                   queue=None,
+                   walltime=None,
+                   pmem=None):
+    """Create a generic pbs script executing contents."""
     me = __file__
     current_time = time.strftime('%H:%M %D')
-    return """%(shebang)s
+
+    if job_name is None:
+        job_name = 'unnamed_job'
+
+    if numnodes is None:
+        numnodes = str(configuration.numnodes)
+
+    if numcpu is None:
+        numcpu = str(configuration.numprocs)
+
+    if pmem:
+        pmem = ',pmem=' + pmem
+    else:
+        pmem=''
+
+
+    if queue is None:
+        queue = configuration.queue
+
+    additional_configuration_lines = []
+
+    if queue is not None:
+        additional_configuration_lines.append("#PBS -q %(queue)s" % locals())
+        
+    if walltime is None:
+        walltime = configuration.walltime
+
+    if walltime is not None:
+        additional_configuration_lines.append("#PBS -l walltime=%(walltime)s" % locals())
+
+    additional_configuration =  '\n'.join(additional_configuration_lines)
+
+    the_script = """%(shebang)s
 # Created by %(me)s at %(current_time)s
 #PBS -V
 #PBS -N %(job_name)s
+#PBS -l nodes=%(numnodes)s:ppn=%(numcpu)s%(pmem)s
 #PBS -o %(stdout)s
 #PBS -e %(stderr)s
+%(additional_configuration)s
 
 %(contents)s
 """ % locals()
+
+    return the_script
 
 def strip_pbs_ids(source):
     """Return a list of the pbs job ids contained in source."""

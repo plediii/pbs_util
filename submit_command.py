@@ -5,19 +5,16 @@ from __future__ import with_statement
 
 import os
 import sys
-import contextlib
-import uuid
 import optparse
 
 import pbs
 import nice_submit
 import tempfile_util
 
-import configuration
-
 import disable_mpi as disable_mpi_module
 
-def run_command_here(script_file_name, command, input_file_name=None, output_file_name=None, err_output_file_name=None, job_name='submit_command', shebang='/bin/bash', verbose=True, numcpu=None, pmem='', time=False, numnodes=None, queue=None, walltime=None,
+def run_command_here(script_file_name, command, input_file_name=None, output_file_name=None, err_output_file_name=None, job_name='submit_command', 
+                     shebang='/bin/bash', verbose=True, numcpu=None, pmem='', time=False, numnodes=None, queue=None, walltime=None,
                      disable_mpi=False):
     """Create a pbs script executing the given in the cwd command with given stdin and stderr/out files."""
     pwd = os.getcwd()
@@ -49,29 +46,7 @@ echo --------------------------------------
     else:
         processor_verbose = ""
 
-    if pmem:
-        pmem = ',pmem=' + pmem
-
     additional_configuration_lines = []
-
-
-    if numnodes is None:
-        numnodes = str(configuration.numnodes)
-
-    if numcpu is None:
-        numcpu = str(configuration.numprocs)
-
-    if queue is None:
-        queue = configuration.queue
-
-    if queue is not None:
-        additional_configuration_lines.append("#PBS -q %(queue)s" % locals())
-        
-    if walltime is None:
-        walltime = configuration.walltime
-
-    if walltime is not None:
-        additional_configuration_lines.append("#PBS -l walltime=%(walltime)s" % locals())
 
     additional_configuration = '\n'.join(additional_configuration_lines)
 
@@ -84,13 +59,7 @@ echo --------------------------------------
         disable_mpi = ''
 
     with open(script_file_name, 'w') as script_file:
-        script ="""#!%(shebang)s
-#PBS -V
-#PBS -N %(job_name)s
-#PBS -l nodes=%(numnodes)s:ppn=%(numcpu)s%(pmem)s
-#PBS -o %(output_file_name)s
-#PBS -e %(err_output_file_name)s
-%(additional_configuration)s
+        script =  pbs.generic_script("""
 
 working_directory=%(pwd)s
 
@@ -107,7 +76,14 @@ cd ${working_directory}
 %(disable_mpi)s
 
 %(command)s %(redirect_input)s
-""" % locals()
+""" % locals(),
+                                     numnodes=numnodes,
+                                     numcpu=numcpu,
+                                     queue=queue,
+                                     walltime=walltime,
+                                     pmem=pmem,
+                                     job_name=job_name)
+
         script_file.write(script)
     
 
