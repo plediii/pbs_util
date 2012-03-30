@@ -5,10 +5,10 @@ import os
 import time
 import uuid
 
-class PyPBSError(Exception): pass
-class PyPBSQStatError(PyPBSError): pass
-class PyPBSQSubError(PyPBSError): pass
-class PyPBSWaitError(PyPBSError): pass
+class PBSUtilError(Exception): pass
+class PBSUtilQStatError(PBSUtilError): pass
+class PBSUtilQSubError(PBSUtilError): pass
+class PBSUtilWaitError(PBSUtilError): pass
 
 class JobStatus:
     
@@ -34,7 +34,7 @@ def parse_qstat_plain_output(output_lines):
     """Parse the output of qstat in the form with no arguments."""
     
     if len(output_lines) < 3:
-        raise PyPBSQStatError('Bad qstat output:\n"%s"' % '\n'.join(output_lines))
+        raise PBSUtilQStatError('Bad qstat output:\n"%s"' % '\n'.join(output_lines))
 
     job_statuses = []
 
@@ -53,7 +53,7 @@ def parse_qstat_all_output(output_lines):
     """Parse the output of qstat in the form with the -a argument."""
     
     if len(output_lines) < 3:
-        raise PyPBSQStatError('Bad qstat output:\n"%s"' % '\n'.join(output_lines))
+        raise PBSUtilQStatError('Bad qstat output:\n"%s"' % '\n'.join(output_lines))
 
     job_statuses = []
 
@@ -91,7 +91,7 @@ def qstat_id(job_id):
 
     output_lines = call_qstat([str(job_id)])
     if len(output_lines) != 3:
-        raise PyPBSQStatError('Bad qstat id output:\n"%s"' % '\n'.join(output_lines))
+        raise PBSUtilQStatError('Bad qstat id output:\n"%s"' % '\n'.join(output_lines))
 
     job_statuses = parse_qstat_plain_output(output_lines)
     
@@ -141,7 +141,7 @@ def parse_qsub_output(output):
         signature = '.'.join(output[:-1].split('.')[1:]) # the [:-1] kills the newline at the end of the qsub output
         return (job_id, signature)
     except Exception:
-        raise PyPBSQSubError('Unable to parse qsub output: "%s"' % output)
+        raise PBSUtilQSubError('Unable to parse qsub output: "%s"' % output)
 
     
 def qsub(script_filename, verbose=False):
@@ -151,7 +151,7 @@ def qsub(script_filename, verbose=False):
     qsub_output_pipes = qsub_process.communicate()
     qsub_output = qsub_output_pipes[0]
     if len(qsub_output) == 0:
-        raise PyPBSQSubError("Failed to submit %s, qsub gave no stdoutput.  stderr: '%s'" % (script_filename, qsub_output_pipes[1]))
+        raise PBSUtilQSubError("Failed to submit %s, qsub gave no stdoutput.  stderr: '%s'" % (script_filename, qsub_output_pipes[1]))
     if verbose:
         print '\n%s\n' %  qsub_output
     pbs_id = parse_qsub_output(qsub_output)[0]
@@ -161,18 +161,18 @@ def qwait(job_id,sleep_interval=5,max_wait=None):
     try:
         while qstat_id(job_id).state == 'Q':
             time.sleep(sleep_interval)
-    except PyPBSError:
+    except PBSUtilError:
         return
 
     if not max_wait is None:
         start_time = time.time()
     while True:
         if (not max_wait is None) and time.time() - start_time > max_wait:
-            raise PyPBSWaitError("PBS script failed to return within max_wait time. max_wait=%s" % max_wait)
+            raise PBSUtilWaitError("PBS script failed to return within max_wait time. max_wait=%s" % max_wait)
         try:
             qstat_id(job_id)       # This will throw an exception when the job completes.
             time.sleep(sleep_interval)
-        except PyPBSError:
+        except PBSUtilError:
             break
 
 def qdel(job_id):

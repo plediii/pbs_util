@@ -3,13 +3,13 @@
 
 import sys
 
-import pypbs
+import pbs
 
 def qdel_range(min_id, max_id):
-    for job_stat in pypbs.qstat():
+    for job_stat in pbs.qstat():
         if int(job_stat.id) >= min_id and int(job_stat.id) <= max_id:
             print 'Deleting %s ' % job_stat
-            pypbs.qdel(job_stat)
+            pbs.qdel(job_stat)
 
 def main(argv):
     if len(argv) != 2:

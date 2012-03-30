@@ -9,11 +9,7 @@ import Queue
 import random
 
 import pbs_map as ppm
-
-import Queue
-
-import pypbs.pbs_map_classes as pmc
-import cPickle as pickle
+import pbs_util.pbs_map_classes as pmc
 
 def main(argv=[]):
     print sys.path

@@ -81,10 +81,10 @@ def config(config_file_name):
 
 
 
-default_config_file_name = os.getenv('HOME') + '/.pypbs.ini'
+default_config_file_name = os.getenv('HOME') + '/.pbs_util.ini'
 config(default_config_file_name)
 
-local_config_file_name = os.getcwd() + '/pypbs.ini'
+local_config_file_name = os.getcwd() + '/pbs_util.ini'
 config(local_config_file_name)
 
 default_email_config_file_name = os.getenv('HOME') + '/.send_email.ini'

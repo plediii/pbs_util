@@ -795,43 +795,6 @@ def parse_worker_info(cls):
 
     return module_file_name, class_name
 
-# def get_worker_class(worker_info):
-#     module_file_name = worker_info[0]
-#     class_name = worker_info[1]
-#     module_name = os.path.splitext(os.path.split(module_file_name)[1])[0]
-#     print 'GETWORKERCLASS'
-#     print 'file = ', globals()['__file__']
-#     globals()['__file__']= module_file_name
-#     print 'file = ', globals()['__file__']
-
-#     # The other module will almost certainly import pypbs.pbs_map.
-#     # And when pbs_map is executed directly, the module finder will
-#     # try to load ./pypbs.py first, which will lead to an error since
-#     # it does not contain the pbs_map module.
-
-#     # A better solution might be to rename pypbs.py to pbs.py or
-#     # pbs_util.py or anything besides pypbs
-#     pbs_directory = sys.path[0]
-
-#     # print 'path = ', globals()['__path__']
-#     module_directory = os.path.split(module_file_name)[0]
-
-#     print sys.path
-
-#     print 'Adding %s to sys.path' % module_directory
-#     sys.path.insert(0, module_directory)
-
-#     print 'Moving %s from sys.path to back' % pbs_directory
-#     sys.path.remove(pbs_directory)
-#     sys.path = sys.path + [pbs_directory]
-
-#     print sys.path
-
-#     client_mod = imp.load_source(module_name, module_file_name)
-#     C = getattr(client_mod, class_name)
-#     return C
-    
-
 def get_startup_args(worker_info):
     return worker_info[2]
 

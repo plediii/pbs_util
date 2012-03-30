@@ -1,26 +1,55 @@
 
-# pypbs
+# pbs_util
  
-pypbs is a python module wrapping interaction with the Portable Batch
-System (PBS) for submitting jobs on computer clusters, and a number of
-useful utilities utilizing this interface.  This is not a C API
-wrapper, but a wrapper around the PBS shell commands `qsub`, `qdel`
-and `qstat`.  Its primary purpose is to make available several command
-line utilities and a job mapping function in python.
+The `pbs_util` provides utility scripts and python modules for working
+with the Portable Batch System.
+
+This is not a wrapper for the C API, but includes a simple wrapper
+around the PBS shell commands `qsub`, `qdel` and `qstat`.  
+
+`pbs_util` provides a few command line tools and a module for
+automatically running python functions on compute nodes.  For example,
+the following is a complete program to identify prime numbers in
+parallel on 100 nodes of a compute cluster:
+
+    import pbs_util.pbs_map as ppm
+
+    class PrimeWorker(ppm.Worker):
+
+        def __call__(self, n):
+            is_prime = True
+            for m in xrange(2,n):
+                if n % m == 0:
+                    is_prime = False
+                    break
+
+            return (n, is_prime)
+
+
+    if __name__ == "__main__":
+        for (n, is_prime) in sorted(ppm.pbs_map(PrimeWorker, range(1000, 10100), 
+                                                num_clients=100)):
+            if is_prime:
+                print '%d is prime' % (n)
+            else:
+                print '%d is composite' % (n)
+
+
+
 
 ## Dependencies
 
-pypbs depends on my tempfile_util module. 
+`pbs_util` depends on my `tempfile_util` module. 
 
 ## Configuration
 
-Default options for qsub submission are set in either ~/.pypbs.ini, or
-pypbs.ini in the local directory.  The ini file dictates, for example,
+Default options for qsub submission are set in either ~/.pbs_util.ini, or
+pbs_util.ini in the local directory.  The ini file dictates, for example,
 the number of nodes to request in a single job, the number of
 processors on each node, the queue to submit to, and the maximum
 number of simultaneous jobs to submit.
 
-Here is an example pypbs.ini I use:
+Here is an example pbs_util.ini I use:
 
      [PBSMAP]
      numnodes=1
@@ -31,9 +60,9 @@ Here is an example pypbs.ini I use:
 
 ## Testing
 
-`pypbs`'s ability to submit and query that status of submitted jobs can be tested by:
+`pbs_util` includes a test suite to check its ability to submit jobs:
 
-   python test_pypbs.py
+   python test_pbs_util.py
 
 ## Shell Utilities
 
@@ -123,7 +152,7 @@ stdout.
 
 ### pbs_map
 
-The collection of command line utilities in pypbs are useful for
+The collection of command line utilities in `pbs_util` are useful for
 gluing together non-trivial PBS jobs at the command line; however they
 can not address how to divide a large set of small jobs in an optimal
 way to the compute nodes.  There is often a non-neglible delay between
