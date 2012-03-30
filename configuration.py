@@ -4,11 +4,11 @@ import pwd
 import ConfigParser
 
 # TODO: there is no reason for these to be exclusive to pbs_map
-pbs_map_numnodes=1
-pbs_map_numprocs=1
-pbs_map_clients_per_pbs=1
-pbs_map_queue=None
-pbs_map_walltime=None
+numnodes=1
+numprocs=1
+clients_per_pbs=1
+queue=None
+walltime=None
 
 max_submissions=200
 
@@ -21,46 +21,34 @@ def get_user_name():
 def config_email(configuration):
     global from_address, sendto_email_address
 
-    # default to user@rice.edu
-    sendto_email_address=get_user_name() + '@rice.edu'
+    # default to user@localhost
+    sendto_email_address=get_user_name() + '@localhost'
     from_address=get_user_name() + '@localhost'
 
-    # Try to load requested username
-    dropbox_section = 'DROPBOX'
-    email_section='email'
-    from_email_section='from_email'
-    if configuration.has_section(dropbox_section):
-        if configuration.has_option(dropbox_section, email_section):
-            sendto_email_address=configuration.get(dropbox_section, email_section)
-
-        if configuration.has_option(dropbox_section, from_email_section):
-            from_address=configuration.get(dropbox_section, from_email_section)
-
-
 def config_pbs(configuration):
-    global pbs_map_numnodes, pbs_map_numprocs, pbs_map_clients_per_pbs, pbs_map_queue, pbs_map_walltime, max_submissions
+    global numnodes, numprocs, clients_per_pbs, queue, walltime, max_submissions
 
-    pbs_map_section = 'PBSMAP'  # configuration section for pyamber module.
+    section = 'PBSUTIL'  # configuration section for pyamber module.
 
-    if configuration.has_section(pbs_map_section):
-        if configuration.has_option(pbs_map_section, 'numnodes'):
-            pbs_map_numnodes = configuration.get(pbs_map_section, 'numnodes')
+    if configuration.has_section(section):
+        if configuration.has_option(section, 'numnodes'):
+            numnodes = configuration.get(section, 'numnodes')
 
-        if configuration.has_option(pbs_map_section, 'numprocs'):
-            pbs_map_numprocs = configuration.get(pbs_map_section, 'numprocs')
+        if configuration.has_option(section, 'numprocs'):
+            numprocs = configuration.get(section, 'numprocs')
 
-        pbs_map_clients_per_pbs= int(pbs_map_numnodes) * int(pbs_map_numprocs)
-
-
-        if configuration.has_option(pbs_map_section, 'queue'):
-            pbs_map_queue = configuration.get(pbs_map_section, 'queue')
-
-        if configuration.has_option(pbs_map_section, 'walltime'):
-            pbs_map_walltime = configuration.get(pbs_map_section, 'walltime')
+        clients_per_pbs= int(numnodes) * int(numprocs)
 
 
-        if configuration.has_option(pbs_map_section, 'max_submissions'):
-            max_submissions = configuration.getint(pbs_map_section, 'max_submissions')
+        if configuration.has_option(section, 'queue'):
+            queue = configuration.get(section, 'queue')
+
+        if configuration.has_option(section, 'walltime'):
+            walltime = configuration.get(section, 'walltime')
+
+
+        if configuration.has_option(section, 'max_submissions'):
+            max_submissions = configuration.getint(section, 'max_submissions')
 
 
     

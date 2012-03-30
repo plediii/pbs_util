@@ -51,7 +51,7 @@ number of simultaneous jobs to submit.
 
 Here is an example pbs_util.ini I use:
 
-     [PBSMAP]
+     [PBSUTIL]
      numnodes=1
      numprocs=1
      queue=serial

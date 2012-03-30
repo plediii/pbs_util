@@ -56,19 +56,19 @@ echo --------------------------------------
 
 
     if numnodes is None:
-        numnodes = str(configuration.pbs_map_numnodes)
+        numnodes = str(configuration.numnodes)
 
     if numcpu is None:
-        numcpu = str(configuration.pbs_map_numprocs)
+        numcpu = str(configuration.numprocs)
 
     if queue is None:
-        queue = configuration.pbs_map_queue
+        queue = configuration.queue
 
     if queue is not None:
         additional_configuration_lines.append("#PBS -q %(queue)s" % locals())
         
     if walltime is None:
-        walltime = configuration.pbs_map_walltime
+        walltime = configuration.walltime
 
     if walltime is not None:
         additional_configuration_lines.append("#PBS -l walltime=%(walltime)s" % locals())

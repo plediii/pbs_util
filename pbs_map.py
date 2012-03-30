@@ -505,8 +505,8 @@ class PBSMap(object):
 
         logging.info('Starting ' + map_name)
 
-        master_work_queue = Queue.Queue(maxsize=max(1, (configuration.pbs_map_clients_per_pbs * num_clients)))
-        master_result_queue = Queue.Queue(maxsize=max(1, (4 * configuration.pbs_map_clients_per_pbs * num_clients)))
+        master_work_queue = Queue.Queue(maxsize=max(1, (configuration.clients_per_pbs * num_clients)))
+        master_result_queue = Queue.Queue(maxsize=max(1, (4 * configuration.clients_per_pbs * num_clients)))
 	# master_running_queue = Queue.Queue()
         # master_work_queue.cancel_join_thread()
         # master_result_queue.cancel_join_thread()
@@ -575,7 +575,7 @@ class PBSMap(object):
             err_output_file_name = '/dev/null'
             
 
-        if configuration.pbs_map_clients_per_pbs > 1:
+        if configuration.clients_per_pbs > 1:
             base_command = ["mpiexec", "python"]
         else:
             base_command = ["python"]
@@ -590,10 +590,10 @@ class PBSMap(object):
                          job_name=map_name,
                          output_file_name=output_file_name,
                          err_output_file_name=err_output_file_name,
-                         numcpu=configuration.pbs_map_numprocs,
-                         numnodes=configuration.pbs_map_numnodes,
-                         queue=configuration.pbs_map_queue,
-                         walltime=configuration.pbs_map_walltime,
+                         numcpu=configuration.numprocs,
+                         numnodes=configuration.numnodes,
+                         queue=configuration.queue,
+                         walltime=configuration.walltime,
                          disable_mpi=True)
         return script_file_name
 

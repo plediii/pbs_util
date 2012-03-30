@@ -1,8 +1,7 @@
 
 import sys
 import uuid
-import time
-import random
+
 
 import pbs_map
 import configuration
@@ -14,7 +13,7 @@ def new_worker_name():
 
 def test_worker_names():
     worker_names = set()
-    test_count=100*configuration.pbs_map_clients_per_pbs
+    test_count=100*configuration.clients_per_pbs
     for count in xrange(test_count):
         worker_names.add(new_worker_name())
 
@@ -52,12 +51,12 @@ def main(argv=[]):
 
     worker_names = set()
 
-    print 'Waiting for %d workers...' % configuration.pbs_map_clients_per_pbs
+    print 'Waiting for %d workers...' % configuration.clients_per_pbs
 
     for worker_name in pbs_map.pbs_map(MapCountWorker, random_names(), num_clients=1):
         worker_names.add(worker_name)
         print len(worker_names)
-        if len(worker_names) == configuration.pbs_map_clients_per_pbs:
+        if len(worker_names) == configuration.clients_per_pbs:
             print 'Good.'
             break
 
