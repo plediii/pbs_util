@@ -1,0 +1,195 @@
+
+body
+{
+    font-family: Verdana, Helvetica, sans-serif;
+    width: 100%;
+    background-color:black;
+}
+
+#left
+{
+    float:left;
+}
+
+#right
+{
+    float:left;
+}
+
+#filterdiv
+{
+    margin-left:auto;
+    margin-right:auto;
+}
+
+#filtertext
+{
+    width: 500px;
+    border-style:inset;
+    float:left;
+}
+
+.hidden
+{
+    visibility:hidden;
+}
+
+label
+{
+    color:white;
+}
+
+input
+{
+    border-color:green;
+    border-radius:10px;
+}
+
+h1
+{
+    color: #090;
+}
+
+table, td, th
+{
+    /* border: 1px solid black; */
+}
+
+#infos
+{
+    background-color:grey;
+    border:solid;
+    margin:5px 5px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+#infos th
+{
+    background-color:green;
+    color:white;
+    height:50px;
+}
+
+#infos tr
+{
+    text-align:right;
+    padding:15px;
+    background-color:cadetblue;
+}
+
+
+#infos tr.alternate
+{
+    background-color:darkcyan;
+}
+
+#jobinfos td:hover
+{
+    background-color:white;
+    cursor:pointer;
+    overflow-x:hidden;
+}
+
+#watching tr
+{
+    background-color:black;
+    color:green;
+    cursor:pointer;
+}
+
+#watching tr:hover
+{
+    color:white;
+    cursor:pointer;
+}
+
+#watching td.kill
+{
+    color:black;
+    background-color:black;
+}
+
+#watching tr:hover td.kill
+{
+    color:grey;
+}
+
+#watching tr:hover td.kill:hover
+{
+    color:black;
+    border-radius:10px;
+    background-color:darkred;
+    border-style:outset;
+}
+
+
+
+#watching #count
+{
+    border-radius:5px;
+    background-color:darkblue;
+    color:yellow;
+    text-shadow: 2px 2px #000000;
+    text-align:right;
+}
+
+#watching #count.alert
+{
+    border-radius:5px;
+    background-color:darkred;
+    color:yellow;
+    text-shadow: 2px 2px #000000;
+    text-align:right;
+}
+
+.watchbutton
+{
+    color:white;
+    text-shadow: 2px 2px #000000;
+    cursor:pointer;
+    border-radius:5px;
+    background-color:green;
+    width:100px;
+    list-style-image: none;
+    list-style-type: none;
+
+}
+
+.watchbutton.clicked
+{
+    background-color:black;
+}
+
+#noteupdate
+{
+    color:grey;
+    cursor:pointer;
+}
+
+#noteupdate:hover
+{
+    color:darkyellow;
+}
+
+#noteupdate.updating
+{
+    color:yellow;
+    cursor:text;
+}
+
+#infosdiv
+{
+    height: 600px;
+    margin:auto;
+    overflow-x:hidden;
+}
+
+#watchingdiv
+{
+    margin:atuo;
+    padding-left:20px
+}
+
