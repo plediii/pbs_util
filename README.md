@@ -1,8 +1,8 @@
 
 # pbs_util
  
-The `pbs_util` provides utility scripts and python modules for working
-with the Portable Batch System.
+The `pbs_util` provides utility scripts, python modules, and a web app
+for monitoring job statuses of the Portable Batch System (PBS).
 
 This is not a wrapper for the C API, but includes a simple wrapper
 around the PBS shell commands `qsub`, `qdel` and `qstat`.  
