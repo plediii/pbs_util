@@ -100,6 +100,35 @@ table, td, th
     cursor:pointer;
 }
 
+#hosts
+{
+    background-color:black;
+    color:cadetblue;
+    text-align:right;
+    /* cursor:pointer; */
+}
+
+#hosts span
+{
+    cursor:pointer;
+}
+
+#hosts span:hover
+{
+    color:white;
+    cursor:pointer;
+}
+
+
+#clusters
+{
+    background-color:black;
+    color:white;
+    text-align:right;
+    /* cursor:pointer; */
+}
+
+
 #watching tr:hover
 {
     color:white;

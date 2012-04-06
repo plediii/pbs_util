@@ -22,12 +22,16 @@ var pbsmon_module = function ()
 	    }
 	};
 
-	var job_infos = [];
+	var job_infos = []; 	// the complete list of jobs sent by the server
+	var hosts = []; 	// hosts seen by the server
 	var filter_text = "";
 
 	var watched_filters = [];
 
 	var new_watched_filter = function (filter_text, filter_func)
+	// takes a func transforming a list into a list, and a name
+	// describing the transformation, creating a watch filter
+	// object
 	{
 	    return {name: filter_text,
 		    running_count: function ()
@@ -60,53 +64,52 @@ var pbsmon_module = function ()
 	};
 
 	var new_filter_function = function (filter_text)
+	// createa a new filter function (list to list) filtering for
+	// the given text in one of the fields
 	{
-	    if (filter_text)
-	    {
-		var filter_texts = filter_text.split(' ');
-
-		var filter_function = function (job_infos)
-		{
-		    var filtered_job_infos = [];
-		    var job_info;
-		    var filter_text_part;
-		    var all_match;
-
-		    for (idx in job_infos) 
-		    {
-			job_info = job_infos[idx];
-			job_info_str = 'hostname:' + job_info['hostname'] + ' username:' + job_info['username'] + ' jobid:' + job_info['jobid'] + ' jobname:' + job_info['jobname'] + ' elapsedtime:' + job_info['elapsed_time'];
-
-
-			all_match = true;
-			for (idx in filter_texts)
-			{
-			    filter_text_part = filter_texts[idx];
-			    
-			    if (filter_text_part)
-			    {
-				if (!job_info_str.match(filter_text_part))
-				{
-				    all_match = false;
-				    break;
-				}
-			    }
-			}
-
-			if (all_match) 
-			{
-			    filtered_job_infos.push(job_info);
-			}
-		    }
-		    return filtered_job_infos;
-		};
-		return filter_function;
-	    }
-	    else
+	    if (!filter_text)
 	    {
 		return null;
 	    }
-	    
+
+	    var filter_texts = filter_text.split(' ');
+
+	    var filter_function = function (job_infos)
+	    {
+		var filtered_job_infos = [];
+		var job_info;
+		var filter_text_part;
+		var all_match;
+
+		for (idx in job_infos) 
+		{
+		    job_info = job_infos[idx];
+		    job_info_str = 'hostname:' + job_info['hostname'] + ' username:' + job_info['username'] + ' jobid:' + job_info['jobid'] + ' jobname:' + job_info['jobname'] + ' elapsedtime:' + job_info['elapsed_time'];
+
+
+		    all_match = true;
+		    for (idx in filter_texts)
+		    {
+			filter_text_part = filter_texts[idx];
+			
+			if (filter_text_part)
+			{
+			    if (!job_info_str.match(filter_text_part))
+			    {
+				all_match = false;
+				break;
+			    }
+			}
+		    }
+
+		    if (all_match) 
+		    {
+			filtered_job_infos.push(job_info);
+		    }
+		}
+		return filtered_job_infos;
+	    };
+	    return filter_function;
 	};
 
 
@@ -117,7 +120,7 @@ var pbsmon_module = function ()
 
 	var update_job_infos = function (callback)
 	{
-	    $.ajax({url: '/pbsmon/get_state',
+	    $.ajax({url: 'get_state',
 		    success: function (new_job_infos) 
 		    {
 			job_infos = new_job_infos;
@@ -129,13 +132,28 @@ var pbsmon_module = function ()
 		    }});
 	};
 
-	
+
+	var update_hosts = function (callback)
+	{
+	    $.ajax({url: 'get_hosts',
+		    success: function (new_hosts) 
+		    {
+			hosts = new_hosts
+
+			if (callback) 
+			{
+			    callback(hosts);
+			}
+		    }});
+	};
+
 	var watched_filters_local_storage_name = 'pbsmon_watched_filter_texts_json';
 
 	var model_version = 1;
 	var model_version_local_storage_name = 'pbsmon_model_version_json';
 
 	var retrieve_watched_filters = function ()
+	// Try to pull the old list of watched filters from localStorage
 	{
 
 	    var retrieved_watched_filters = [];
@@ -181,8 +199,6 @@ var pbsmon_module = function ()
 		console.log("no local storage");
 	    }
 
-	    console.log("retrieved " + JSON.stringify(retrieved_watched_filters));
-
 	    return retrieved_watched_filters;
 	};
 
@@ -198,7 +214,6 @@ var pbsmon_module = function ()
 		}
 
 		watched_filter_texts_json = JSON.stringify(watched_filter_texts);
-		console.log('storing '+ watched_filter_texts_json);
 		window.localStorage[watched_filters_local_storage_name] = watched_filter_texts_json;
 		window.localStorage[model_version_local_storage_name] = JSON.stringify(model_version);
 	    }
@@ -234,6 +249,8 @@ var pbsmon_module = function ()
 
 	    update_job_infos: update_job_infos,
 
+	    update_hosts: update_hosts,
+
 	    get_filter_text: function ()
 	    {
 		return filter_text;
@@ -244,6 +261,12 @@ var pbsmon_module = function ()
 	    {
 		return job_infos;
 	    },
+
+	    get_hosts: function () 
+	    {
+		return hosts;
+	    },
+
 
 	    get_watched_filters: function ()
 	    {
@@ -322,6 +345,7 @@ var pbsmon_module = function ()
 	var note_update;
 
 	var link_search_controller = function ()
+	// Attach the controller functions to the DOM elements
 	{
 	    filter_text.keyup(function () {
 		controller.on_filter_text_keyup($(this).val());
@@ -331,10 +355,7 @@ var pbsmon_module = function ()
 			       {
 				   controller.on_watch_button_click();
 			       });
-	};
 
-	var link_note_update_controller = function ()
-	{
 	    note_update.click(controller.on_note_update_click);
 	};
 
@@ -348,6 +369,7 @@ var pbsmon_module = function ()
 	      watch_table = $("#watching");
 
 	      note_update = $("#noteupdate");
+	      hosts_div = $("#hosts");
 
 	      ready = true;
 	      try_ready();
@@ -355,13 +377,12 @@ var pbsmon_module = function ()
 	      if (controller)
 	      {
 		  link_search_controller();
-		  link_note_update_controller();
 	      }
 	  });
 
 	var job_info_tr = function (job_info)
 	{
-	    return '<tr><td>' + job_info['hostname'] + '</td> <td> ' + job_info['username'] + '</td> <td>' + job_info['jobid'] + '</td> <td> ' + job_info['jobname'] + '</td> <td>' + job_info['elapsed_time'] + '</td> </tr>'
+	    return '<tr><td>' + job_info['hostname'] + '</td> <td> ' + job_info['username'] + '</td> <td>' + job_info['jobid'] + '</td> <td> ' + job_info['jobname'] + '</td> <td>' + job_info['time'] + '</td> </tr>'
 	};
 
 	var watched_tr = function (idx, watched_filter)
@@ -411,7 +432,7 @@ var pbsmon_module = function ()
 
 		$("td", tbody_selection).click(function ()
 					       {
-						   controller.on_td_click($(this).text().trim());
+						   controller.on_filterable_click($(this).text().trim());
 					       });
 	    }
 	    
@@ -468,6 +489,30 @@ var pbsmon_module = function ()
 		    $("#watch" + idx + " td.kill").click(controller.on_kill_watched_click_callback(watched_filters, idx));
 		}
 		
+	    },
+
+	    render_hosts: function ()
+	    {
+		var hosts = model.get_hosts();
+
+		hosts_div.empty()
+
+		if (hosts.length > 0) 
+		{
+		    var host_span_text = '<span>' + hosts.join('</span>, <span>') + '</span>';
+		    hosts_div.html(host_span_text);
+
+		    $("span", hosts_div).each(function () 
+					      {
+						  var text = $(this).text();
+						  $(this).click(function () 
+								{
+								    controller.on_filterable_click(text);
+								});
+					      });
+		    
+		}
+
 	    },
 	    
 	    enable_watch: function ()
@@ -529,10 +574,6 @@ var pbsmon_module = function ()
 			}
 		    }
 		}
-		// else
-		// {
-		//     new_filter = false;
-		// }
 		
 
 		if (new_filter)
@@ -555,6 +596,12 @@ var pbsmon_module = function ()
 	    view.render_watched();
 	};
 
+	var on_hosts_change = function ()
+	{
+	    view.render_hosts();
+	};
+
+
 	var update_pbsmon = function update_pbsmon ()
 	{
 	    var old_filtered_job_infos = model.get_filtered_job_infos();
@@ -562,14 +609,10 @@ var pbsmon_module = function ()
 
 	    model.update_job_infos(function () 
 				   {
-				       // TODO: these array comparisons always evalutate to false
+				       console.log('TODO:these array comparisons always evalutate to false; fix it to do what I intend');
 				       if (old_filtered_job_infos !== model.get_filtered_job_infos())
 				       {
 					   on_filtered_job_infos_change();
-				       }
-				       else
-				       {
-					   console.log("arrays were equal");
 				       }
 
 				       if (old_job_infos !== model.get_job_infos())
@@ -578,6 +621,12 @@ var pbsmon_module = function ()
 				       }
 				       view.note_updated();
 				   });
+
+	    model.update_hosts(function () 
+				   {
+				       on_hosts_change();
+				   });
+
 	    view.note_update();
 	};
 
@@ -657,6 +706,7 @@ var pbsmon_module = function ()
 	return {
 
 	    on_filter_text_keyup: function (text)
+	    // called after the user finishes clicking the keyboard in the filter textbox
 	    {
 		var old_job_infos = model.get_filtered_job_infos();
 		model.set_filter_text(text);
@@ -674,13 +724,15 @@ var pbsmon_module = function ()
 	    },
 
 	    on_note_update_click: function ()
+	    // called when the user clicks the datetime text
 	    {
 		clear_update_timer();
 		// TODO: assert the timer is properly set
 		update_timer_callback();
 	    },
 
-	    on_td_click: function (text)
+	    on_filterable_click: function (text)
+	    // call when the user clicks on an element in the table
 	    {
 		model.add_to_filter_text(text);
 		
@@ -690,6 +742,7 @@ var pbsmon_module = function ()
 	    },
 
 	    on_watched_click_callback: function (watched_filters, idx)
+	    // called when the watch button is clicked
 	    {
 		return function ()
 		{
@@ -700,6 +753,7 @@ var pbsmon_module = function ()
 	    },
 
 	    on_kill_watched_click_callback: function (watched_filters, idx)
+	    // called when the kill button on a watch is clicked
 	    {
 		return function ()
 		{
@@ -719,54 +773,56 @@ var pbsmon_module = function ()
     CONTROLLER = pbsmon_controller(MODEL, VIEW);
     VIEW.set_cm(CONTROLLER, MODEL);
 
-    return CONTROLLER;
+    return {CONTROLLER:CONTROLLER,
+	    MODEL:MODEL,
+	    VIEW:VIEW}
 };
 
 // fix django csrf issues
-$(document).ajaxSend(function(event, xhr, settings) 
-		     {
-			 function getCookie(name) 
-			 {
-			     var cookieValue = null;
-			     if (document.cookie && document.cookie != '') 
-			     {
-				 var cookies = document.cookie.split(';');
-				 for (var i = 0; i < cookies.length; i++) 
-				 {
-				     var cookie = jQuery.trim(cookies[i]);
-				     // Does this cookie string begin with the name we want?
-				     if (cookie.substring(0, name.length + 1) == (name + '=')) 
-				     {
-					 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-					 break;
-				     }
-				 }
-			     }
-			     return cookieValue;
-			 }
-			 function sameOrigin(url) 
-			 {
-			     // url could be relative or scheme relative or absolute
-			     var host = document.location.host; // host + port
-			     var protocol = document.location.protocol;
-			     var sr_origin = '//' + host;
-			     var origin = protocol + sr_origin;
-			     // Allow absolute or scheme relative URLs to same origin
-			     return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
-				 (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
-				 // or any other URL that isn't scheme relative or absolute i.e relative.
-				 !(/^(\/\/|http:|https:).*/.test(url));
-			 }
-			 function safeMethod(method) 
-			 {
-			     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-			 }
+// $(document).ajaxSend(function(event, xhr, settings) 
+// 		     {
+// 			 function getCookie(name) 
+// 			 {
+// 			     var cookieValue = null;
+// 			     if (document.cookie && document.cookie != '') 
+// 			     {
+// 				 var cookies = document.cookie.split(';');
+// 				 for (var i = 0; i < cookies.length; i++) 
+// 				 {
+// 				     var cookie = jQuery.trim(cookies[i]);
+// 				     // Does this cookie string begin with the name we want?
+// 				     if (cookie.substring(0, name.length + 1) == (name + '=')) 
+// 				     {
+// 					 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+// 					 break;
+// 				     }
+// 				 }
+// 			     }
+// 			     return cookieValue;
+// 			 }
+// 			 function sameOrigin(url) 
+// 			 {
+// 			     // url could be relative or scheme relative or absolute
+// 			     var host = document.location.host; // host + port
+// 			     var protocol = document.location.protocol;
+// 			     var sr_origin = '//' + host;
+// 			     var origin = protocol + sr_origin;
+// 			     // Allow absolute or scheme relative URLs to same origin
+// 			     return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+// 				 (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+// 				 // or any other URL that isn't scheme relative or absolute i.e relative.
+// 				 !(/^(\/\/|http:|https:).*/.test(url));
+// 			 }
+// 			 function safeMethod(method) 
+// 			 {
+// 			     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+// 			 }
 
-			 if (!safeMethod(settings.type) && sameOrigin(settings.url)) 
-			 {
-			     xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
-			 }
-		     });
+// 			 if (!safeMethod(settings.type) && sameOrigin(settings.url)) 
+// 			 {
+// 			     xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+// 			 }
+// 		     });
 
 
 PBSMON = pbsmon_module();
