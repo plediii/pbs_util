@@ -112,7 +112,7 @@ To initiate the `pbsmon` server on `serverhost`:
 
 `pbsmon.py` accepts an optional argument for the port number.  By
 default this is 8080.  After starting the server, you can check out
-`pbsmon` with a web browser at `localhost:8080`.  Initially, it does
+`pbsmon` with a web browser at `http://serverhost:8080`.  Initially, it does
 not have information about jobs running on the cluster.
 
 ### Run pbs_watch on clusters
