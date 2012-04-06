@@ -1,10 +1,16 @@
 #!/usr/bin/env python
+
+import sys
+
 import time
 import socket
 import urllib
 import json
+import argparse
 
 import pbs
+
+
 
 def trim_digits(s):
     return ''.join(c for c in s if not c.isdigit())
@@ -37,8 +43,11 @@ def pbs_state():
 
 
 
-def report():
+def report(update_host, update_url='/update'):
     global hostname
+
+    update_url = 'http://' + update_host + update_url
+
     state = pbs_state()
 
     state_json = json.dumps(state)
@@ -46,14 +55,37 @@ def report():
     params = urllib.urlencode({'state': state_json})
 
     try:
-        f = urllib.urlopen("http://localhost/update", params)
+        f = urllib.urlopen(update_url, params)
         response = f.read()
     except IOError as e:
-        response = e
+        response = 'ERROR:' + str(e)
+
+    max_response = 500
+    if len(response) > max_response:
+        response = 'Long response; tail = ' + response[-max_response:]
+
     print '%s %s' % (hostname, response)
 
 
-if __name__ == "__main__":
+def main(argv=sys.argv[1:]):
+    
+    parser = argparse.ArgumentParser(description="""Update a pbsmon server.""")
+
+    parser.add_argument("host", help="Host running pbsmon server.")
+    parser.add_argument("--port", default="8080", 
+                        help="Port on the host running the pbsmon server.")
+
+
+    args = parser.parse_args(argv)
+
+    update_host = args.host + ':' + args.port
+
+    print '^C to stop.'
+
     while True:
-        report()
+        report(update_host)
         time.sleep(5 * 60)
+    
+
+if __name__ == "__main__":
+    main()
