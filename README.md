@@ -82,6 +82,43 @@ There are also tests for the pbs_map module:
 And a couple scripts demonstrating the use of `pbs_map`:
 `prime_example.py` and `host_example.py`.
 
+
+
+## web app
+
+`pbs_util` includes a simple web app, `pbsmon`, for monitoring the
+status of jobs on a collection of clusters.  To use `pbsmon`, first,
+on a host accessible by both the cluster and external hosts wishing to
+view the monitor, start the server. We'll call this host `serverhost`
+This requires the web.py framework.  To start the server:
+
+
+	   cd pbs_util/pbsmon
+	   git clone git://github.com/webpy/webpy.git
+	   ln -s webpy/web .
+
+	   python pbsmon.py
+
+
+`pbsmon.py` accepts an optional argument for the port number.  By
+default this is 8080.  After starting the server, you can check out
+`pbsmon` with a web browser at `localhost:8080`.  Initially, it does
+not have information about jobs running on the cluster.
+
+
+Second, on each of the clusters desired to be monitored, run
+`pbs_watch.py`.  
+
+		 cd pbs_util/pbsmon
+		 python pbs_watch.py serverhost --port=8080
+
+
+Run `pbs_watch.py` on as many clusters as desired.  Each
+`pbs_watch.py` will contact the `pbsmon` server running on
+`serverhost` with the list of running jobs every 5 minutes.  The
+`pbsmon` webapp running in the browser will poll the `pbsmon` server
+for updated jobs once a minute.
+
 ## Shell Utilities
 
 ### qdel_all
