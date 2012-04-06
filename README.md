@@ -90,14 +90,24 @@ And a couple scripts demonstrating the use of `pbs_map`:
 status of jobs on a collection of clusters.  To use `pbsmon`, first,
 on a host accessible by both the cluster and external hosts wishing to
 view the monitor, start the server. We'll call this host `serverhost`
-This requires the web.py framework.  To start the server:
+This requires the web.py framework.  
 
+
+### web.py requirement
+
+The first time the `pbsmon` is run, you need to install `webpy`:
 
 	   cd pbs_util/pbsmon
 	   git clone git://github.com/webpy/webpy.git
 	   ln -s webpy/web .
 
-	   python pbsmon.py
+
+### Running pbsmon server
+
+To initiate the `pbsmon` server on `serverhost`:
+
+   cd pbs_util/pbsmon   
+   python pbsmon.py 8080
 
 
 `pbsmon.py` accepts an optional argument for the port number.  By
@@ -105,6 +115,7 @@ default this is 8080.  After starting the server, you can check out
 `pbsmon` with a web browser at `localhost:8080`.  Initially, it does
 not have information about jobs running on the cluster.
 
+### Run pbs_watch on clusters
 
 Second, on each of the clusters desired to be monitored, run
 `pbs_watch.py`.  
