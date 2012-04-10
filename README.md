@@ -138,7 +138,7 @@ Second, on each of the clusters desired to be monitored, run
 ```bash
 		 cd pbs_util/pbsmon
 		 python pbs_watch.py serverhost --port=8080
-```bash
+```
 
 
 Run `pbs_watch.py` on as many clusters as desired.  Each
