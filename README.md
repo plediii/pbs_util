@@ -12,6 +12,8 @@ automatically running python functions on compute nodes.  For example,
 the following is a complete program to identify prime numbers in
 parallel on 100 nodes of a compute cluster:
 
+
+```python
     import pbs_util.pbs_map as ppm
 
     class PrimeWorker(ppm.Worker):
@@ -33,7 +35,7 @@ parallel on 100 nodes of a compute cluster:
                 print '%d is prime' % (n)
             else:
                 print '%d is composite' % (n)
-
+```
 
 
 
@@ -45,12 +47,16 @@ parallel on 100 nodes of a compute cluster:
 
 Clone `pbs_util` into your python `site-packages` directory.
 
+```bash
       cd your_python_site-packages
-      git clone git@github.com:plediii/pbs_util
+      git clone git://github.com/plediii/pbs_util
+```
 
 Optionally, install symbolic links to the shell utilities to a directory in your `PATH`.  
 
+```bash
 	    ./link_local_bin.sh ${HOME}/local/bin
+```
 
 ## Configuration
 
@@ -61,6 +67,7 @@ processors on each node, the queue to submit to, and the maximum
 number of simultaneous jobs to submit.
 
 Here is an example pbs_util.ini I use:
+
 
      [PBSUTIL]
      numnodes=1
@@ -73,11 +80,15 @@ Here is an example pbs_util.ini I use:
 
 `pbs_util` includes a test suite to check its ability to submit jobs:
 
+```bash
    python test_pbs_util.py
+```
 
 There are also tests for the pbs_map module:
 
+```bash
       python test_pbs_map.py
+```bash
 
 And a couple scripts demonstrating the use of `pbs_map`:
 `prime_example.py` and `host_example.py`.
@@ -97,17 +108,21 @@ This requires the web.py framework.
 
 The first time the `pbsmon` is run, you need to install `webpy`:
 
+```bash
 	   cd pbs_util/pbsmon
 	   git clone git://github.com/webpy/webpy.git
 	   ln -s webpy/web .
+```
 
 
 ### Running pbsmon server
 
 To initiate the `pbsmon` server on `serverhost`:
 
+```bash
    cd pbs_util/pbsmon   
    python pbsmon.py 8080
+```
 
 
 `pbsmon.py` accepts an optional argument for the port number.  By
@@ -120,8 +135,10 @@ not have information about jobs running on the cluster.
 Second, on each of the clusters desired to be monitored, run
 `pbs_watch.py`.  
 
+```bash
 		 cd pbs_util/pbsmon
 		 python pbs_watch.py serverhost --port=8080
+```bash
 
 
 Run `pbs_watch.py` on as many clusters as desired.  Each
@@ -171,7 +188,10 @@ As a trivial example, suppose I have a foo.pbs script, and a bar.pbs
 script, where bar must be run after foo has completed.  These jobs can
 be sequenced via:
 
+
+```bash
    qsub hello.pbs | pbs_chain && qsub world.pbs | pbs_chain && echo "Done."
+```
 
 pbs_chain is robust to program noise, requring only that qsub
 notifications appear at the beginning of a line.  As a more common use
@@ -180,7 +200,10 @@ final job which can analyze the results after they have completed.
 pbs_chain can be combined with nice_submit at the command line in the
 following way:
 
+
+```bash
 	nice_submit generate_scripts | pbs_chain && qsub analyze.pbs
+```
 
 
 ### submit_command
@@ -195,13 +218,17 @@ As a trivial example, suppose we want to gzip foo.db, which is a huge
 file in the current directory.  Instead of zipping the file on login
 node, we can submit it to a compute node simply by:
 
+```bash
       submit_command gzip foo.db
+```
 
 The above command will create a random script name and submit the job.
 If we want a particular name for the batch script, we can provide it
 via the "-w" comand line flag:
 
+```bash
       submit_command -w gzip.pbs gzip foo.db
+```
 
 If we want the script, but don't want the job submitted, we can add
 the "-x" command line option.  Finally, if we would like
@@ -211,7 +238,9 @@ use the "-W" option.  For instance, the following will run `ls' in the
 current directory on a remote compute node, but print the result to
 stdout.
 
+```bash
     submit_command -W ls
+```
 
 
 ## Module Functions
@@ -240,6 +269,7 @@ order).
 To demonstrate how pbs_map works, the following program will compute
 the primality of integers in parallel on the compute nodes.
 
+```python
     import pbs_map as ppm
 
     class PrimeWorker(ppm.Worker):
@@ -261,12 +291,14 @@ the primality of integers in parallel on the compute nodes.
                 print '%d is prime' % (n)
             else:
                 print '%d is composite' % (n)
+```
 
 
 It is also possible to provide initialization arguments to the worker
 class.  The following program displays on which hosts the client
 programs are running.
 
+```python
     import pbs_map as ppm
 
     from socket import gethostname
@@ -287,3 +319,4 @@ programs are running.
                                           num_clients=100):
             print 'Received result from %s who received work from %s' % (node, master)
 
+```
