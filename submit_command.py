@@ -14,7 +14,7 @@ import tempfile_util
 import disable_mpi as disable_mpi_module
 
 def run_command_here(script_file_name, command, input_file_name=None, output_file_name=None, err_output_file_name=None, job_name='submit_command', 
-                     shebang='/bin/bash', verbose=True, numcpu=None, pmem='', time=False, numnodes=None, queue=None, walltime=None,
+                     verbose=True, numcpu=None, mem=None, pmem=None, time=False, numnodes=None, queue=None, walltime=None,
                      disable_mpi=False):
     """Create a pbs script executing the given in the cwd command with given stdin and stderr/out files."""
     pwd = os.getcwd()
@@ -33,8 +33,6 @@ def run_command_here(script_file_name, command, input_file_name=None, output_fil
             err_output_file_name = output_file_name + '.err'
         else:
             err_output_file_name = '/dev/null'
-
-    # I'm assuming bash semantics, so this shebang option is not very useful.
 
     if verbose:
         processor_verbose = """echo --------------------------------------
@@ -81,7 +79,7 @@ cd ${working_directory}
                                      numcpu=numcpu,
                                      queue=queue,
                                      walltime=walltime,
-                                     pmem=pmem,
+                                     mem=mem, pmem=pmem,
                                      job_name=job_name)
 
         script_file.write(script)

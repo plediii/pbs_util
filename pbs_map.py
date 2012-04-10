@@ -593,6 +593,7 @@ class PBSMap(object):
                          numnodes=configuration.numnodes,
                          queue=configuration.queue,
                          walltime=configuration.walltime,
+                         mem=configuration.pmem,
                          disable_mpi=True)
         return script_file_name
 

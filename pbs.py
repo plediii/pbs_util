@@ -213,6 +213,7 @@ def generic_script(contents,
                    numcpu=None,
                    queue=None,
                    walltime=None,
+                   mem=None,
                    pmem=None):
     """Create a generic pbs script executing contents."""
     me = __file__
@@ -231,6 +232,12 @@ def generic_script(contents,
         pmem = ',pmem=' + pmem
     else:
         pmem=''
+
+
+    if mem:
+        mem = ',mem=' + mem
+    else:
+        mem=''
 
 
     if queue is None:
@@ -253,7 +260,7 @@ def generic_script(contents,
 # Created by %(me)s at %(current_time)s
 #PBS -V
 #PBS -N %(job_name)s
-#PBS -l nodes=%(numnodes)s:ppn=%(numcpu)s%(pmem)s
+#PBS -l nodes=%(numnodes)s:ppn=%(numcpu)s%(pmem)s%(mem)s
 #PBS -o %(stdout)s
 #PBS -e %(stderr)s
 %(additional_configuration)s

@@ -10,6 +10,8 @@ numprocs=1
 clients_per_pbs=1
 queue=None
 walltime=None
+pmem=None
+mem=None
 
 max_submissions=200
 
@@ -34,13 +36,21 @@ def config_email(configuration):
 
 
 def config_pbs(configuration):
-    global numnodes, numprocs, clients_per_pbs, queue, walltime, max_submissions
+    global numnodes, numprocs, clients_per_pbs, queue, walltime, max_submissions, pmem, mem
 
     section = 'PBSUTIL' 
 
     if configuration.has_section(section):
         if configuration.has_option(section, 'numnodes'):
             numnodes = configuration.get(section, 'numnodes')
+
+
+        if configuration.has_option(section, 'pmem'):
+            pmem = configuration.get(section, 'pmem')
+
+
+        if configuration.has_option(section, 'mem'):
+            mem = configuration.get(section, 'mem')
 
         if configuration.has_option(section, 'numprocs'):
             numprocs = configuration.get(section, 'numprocs')
