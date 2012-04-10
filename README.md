@@ -88,7 +88,7 @@ There are also tests for the pbs_map module:
 
 ```bash
       python test_pbs_map.py
-```bash
+```
 
 And a couple scripts demonstrating the use of `pbs_map`:
 `prime_example.py` and `host_example.py`.
